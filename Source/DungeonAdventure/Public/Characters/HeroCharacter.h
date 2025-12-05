@@ -10,6 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
+class UBoxComponent;
 
 UCLASS()
 class DUNGEONADVENTURE_API AHeroCharacter : public ABaseCharacter
@@ -27,13 +28,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Movement)
 	FVector2D Directionality;
 
-	virtual void BeginPlay() override;
-
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* InputContext;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* MoveAction;
+
+	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void Movement(const FInputActionValue& Value);
@@ -46,6 +47,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere)
+	UBoxComponent* HitBox;
 
 	void AddDefaultInputMapping();
 

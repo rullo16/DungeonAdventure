@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/InputComponent.h"
+#include "Components/BoxComponent.h"
 
 AHeroCharacter::AHeroCharacter()
 {
@@ -15,9 +16,14 @@ AHeroCharacter::AHeroCharacter()
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->TargetArmLength = 150.f;
 
+
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 	Camera->SetProjectionMode(ECameraProjectionMode::Orthographic);
+
+	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
+	HitBox->SetupAttachment(RootComponent);
+
 }
 
 void AHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -34,7 +40,6 @@ void AHeroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	AddDefaultInputMapping();
-	Directionality = FVector2D(0.f,1.f);
 }
 
 void AHeroCharacter::Movement(const FInputActionValue& Value)
