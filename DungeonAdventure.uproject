@@ -10,7 +10,10 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"PaperZD",
-				"AIModule"
+				"AIModule",
+				"Engine",
+				"UMGEditor",
+				"UMG"
 			]
 		}
 	],

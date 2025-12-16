@@ -19,6 +19,7 @@ public:
 	virtual void OnInit_Implementation() override;
 	virtual void OnTick_Implementation(float DeltaTime) override;
 
+
 	UPROPERTY(BlueprintReadOnly)
 	AHeroCharacter* HeroCharacter;
 
@@ -27,5 +28,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	float Velocity;
+
+
 
 };

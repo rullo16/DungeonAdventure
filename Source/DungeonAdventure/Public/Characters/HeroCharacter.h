@@ -11,6 +11,8 @@ class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
 class UBoxComponent;
+class UPaperZDAnimSequence;
+class UBaseHUD;
 
 UCLASS()
 class DUNGEONADVENTURE_API AHeroCharacter : public ABaseCharacter
@@ -23,6 +25,9 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+	void CheckHit();
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Movement)
@@ -34,12 +39,27 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* MoveAction;
 
-	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* AttackAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPaperZDAnimSequence* AttackSequence;
+
+	UPROPERTY(EditDefaultsOnly, Category=UI)
+	TSubclassOf<UBaseHUD> HUDWidgetClass;
 
 	UFUNCTION()
 	void Movement(const FInputActionValue& Value);
 
+	UFUNCTION()
+	void Attack(const FInputActionValue& Value);
 
+	void BeginPlay() override;
+	FORCEINLINE bool IsAttacking() const { return Attacking; }
+
+	void OnHitAnimationEnd(bool bCompleted) override;
+	void DecreaseHealth(const float IncomingDamage) override;
+	
 private:
 
 	UPROPERTY(VisibleAnywhere)
@@ -51,7 +71,13 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* HitBox;
 
-	void AddDefaultInputMapping();
+	UPROPERTY()
+	UBaseHUD* HUDWidget;
 
+	void AddDefaultInputMapping();
+	void OnAttackAnimationEnd(bool bCompleted);
+
+	bool Attacking;
+	void InitializeHUD();
 	
 };

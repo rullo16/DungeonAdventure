@@ -22,7 +22,10 @@ void AEnemyBase::BeginPlay()
 
 void AEnemyBase::WalkTowards(const FVector& Direction)
 {
-	AddMovementInput(Direction);
+	if (IsAlive() && !IsStunned())
+	{
+		AddMovementInput(Direction);
+	}
 }
 
 void AEnemyBase::SetOverlappingPlayer(AHeroCharacter* Hero)
@@ -49,12 +52,53 @@ void AEnemyBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 	AHeroCharacter* Player = Cast<AHeroCharacter>(OtherActor);
 	if (Player) {
 		OverlappingPlayer = Player;
-		UE_LOG(LogTemp, Warning, TEXT("Overlapping with player"));
 
-		AController* DamageInstigator = GetController();
+		if (OtherComp == OverlappingPlayer->GetHurtBox() && !Player->IsInvincible())
+		{
 
-		UGameplayStatics::ApplyDamage(OverlappingPlayer, 10.f, 
-			DamageInstigator, 
-			this, UDamageType::StaticClass());
+			AController* DamageInstigator = GetController();
+
+			UGameplayStatics::ApplyDamage(OverlappingPlayer, 10.f, 
+				DamageInstigator, 
+				this, UDamageType::StaticClass());
+		}
+	}
+}
+
+float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+	SetStunned(true);
+	GetWorldTimerManager().SetTimer(
+		StunnedTimerHandle,
+		this,
+		&AEnemyBase::EndStunned,
+		0.5f,
+		false
+	);
+	HitStop();
+
+	if(!IsAlive())
+	{
+		DeathSpawnVFX();
+		Destroy();
+	}
+
+	return Damage;
+}
+
+void AEnemyBase::EndStunned()
+{
+	SetStunned(false);
+}
+
+void AEnemyBase::DeathSpawnVFX()
+{
+	if(DeathVFX)
+	{ 
+	
+		GetWorld()->SpawnActor<AActor>(DeathVFX, GetActorLocation(), FRotator::ZeroRotator);
+		
 	}
 }
