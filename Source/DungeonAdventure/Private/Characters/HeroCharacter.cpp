@@ -14,10 +14,11 @@
 #include "Blueprint/UserWidget.h"
 #include "Widgets/BaseHUD.h"
 #include "Widgets/HeartContainerComponent.h"
+#include "Projectiles/ProjectileBase.h"
 
 AHeroCharacter::AHeroCharacter()
 {
-
+	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->TargetArmLength = 150.f;
@@ -40,6 +41,7 @@ void AHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	{
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AHeroCharacter::Movement);
 		Input->BindAction(AttackAction, ETriggerEvent::Started, this, &AHeroCharacter::Attack);
+		Input->BindAction(BowAction, ETriggerEvent::Started, this, &AHeroCharacter::ShootBow);
 	}
 }
 
@@ -82,7 +84,7 @@ void AHeroCharacter::Movement(const FInputActionValue& Value)
 
 void AHeroCharacter::Attack(const FInputActionValue& Value)
 {
-	if (!IsStunned() && IsAlive() && !IsAttacking()) {
+	if (CanAct()) {
 		Attacking = true;
 
 		FZDOnAnimationOverrideEndSignature OnOverrideEnd;
@@ -91,6 +93,24 @@ void AHeroCharacter::Attack(const FInputActionValue& Value)
 		GetAnimInstance()->PlayAnimationOverride(AttackSequence, "DefaultSlot", 1.5f, 0.f, OnOverrideEnd);
 	}
 }
+
+void AHeroCharacter::ShootBow(const FInputActionValue& Value)
+{
+	if (CanAct()) {
+		Attacking = true;
+
+		FZDOnAnimationOverrideEndSignature OnOverrideEnd;
+		OnOverrideEnd.BindUObject(this, &AHeroCharacter::OnAttackAnimationEnd);
+
+		GetAnimInstance()->PlayAnimationOverride(BowSequence, "DefaultSlot", 1.0f, 0.f, OnOverrideEnd);
+	}
+}
+
+bool AHeroCharacter::CanAct()
+{
+	return !IsStunned() && IsAlive() && !IsAttacking();
+}
+
 
 void AHeroCharacter::CheckHit()
 {
@@ -101,12 +121,26 @@ void AHeroCharacter::CheckHit()
 	{
 		if (Actor)
 		{
-			UGameplayStatics::ApplyDamage(Actor, 10.f,
+			UGameplayStatics::ApplyDamage(Actor, SwordDamage,
 				GetController(),
 				this, UDamageType::StaticClass());
 		}
 	}
 
+}
+
+void AHeroCharacter::FireArrow()
+{
+	if (ArrowClass)
+	{
+		FVector SpawnLocation = GetActorForwardVector() * 50.f + GetActorLocation();
+		FRotator SpawnRotation = GetActorRotation();
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Owner = this;
+		GetWorld()->SpawnActor<AProjectileBase>(ArrowClass, SpawnLocation, SpawnRotation, SpawnParams);
+	}
+	
 }
 
 

@@ -18,6 +18,8 @@ public:
 
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
+	FORCEINLINE void SetMaxHealth(const float NewMaxHealth) { MaxHealth = NewMaxHealth; }
+	FORCEINLINE void SetCurrentHealth(const float NewCurrentHealth) { CurrentHealth = NewCurrentHealth; }
 protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Actor Attributes")

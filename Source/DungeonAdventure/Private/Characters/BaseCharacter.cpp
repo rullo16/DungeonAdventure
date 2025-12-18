@@ -64,6 +64,9 @@ float ABaseCharacter::GetMaxHealth()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	HealthComponent->SetCurrentHealth(HealthComponent->GetMaxHealth());
+
 }
 
 void ABaseCharacter::DecreaseHealth(const float IncomingDamage)

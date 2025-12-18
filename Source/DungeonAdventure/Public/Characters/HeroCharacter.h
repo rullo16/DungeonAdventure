@@ -13,6 +13,7 @@ class UInputAction;
 class UBoxComponent;
 class UPaperZDAnimSequence;
 class UBaseHUD;
+class AProjectileBase;
 
 UCLASS()
 class DUNGEONADVENTURE_API AHeroCharacter : public ABaseCharacter
@@ -28,6 +29,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CheckHit();
 
+	UFUNCTION(BlueprintCallable)
+	void FireArrow();
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Movement)
@@ -42,17 +46,34 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* AttackAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* BowAction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UPaperZDAnimSequence* AttackSequence;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPaperZDAnimSequence* BowSequence;
+
 	UPROPERTY(EditDefaultsOnly, Category=UI)
 	TSubclassOf<UBaseHUD> HUDWidgetClass;
+
+	UPROPERTY(EditAnywhere, Category=Projectile)
+	TSubclassOf<AProjectileBase> ArrowClass;
+
+	UPROPERTY(EditAnywhere, Category=Combat)
+	float SwordDamage;
 
 	UFUNCTION()
 	void Movement(const FInputActionValue& Value);
 
 	UFUNCTION()
 	void Attack(const FInputActionValue& Value);
+
+	bool CanAct();
+
+	UFUNCTION()
+	void ShootBow(const FInputActionValue& Value);
 
 	void BeginPlay() override;
 	FORCEINLINE bool IsAttacking() const { return Attacking; }
@@ -73,6 +94,7 @@ private:
 
 	UPROPERTY()
 	UBaseHUD* HUDWidget;
+
 
 	void AddDefaultInputMapping();
 	void OnAttackAnimationEnd(bool bCompleted);
