@@ -24,6 +24,9 @@ class DUNGEONADVENTURE_API AHeroCharacter : public ABaseCharacter
 public:
 	AHeroCharacter();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat)
+	float BowUses;
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
@@ -31,6 +34,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void FireArrow();
+
+	UFUNCTION(BlueprintCallable)
+	void IncreaseHealth(const float HealthAmount);
 
 protected:
 

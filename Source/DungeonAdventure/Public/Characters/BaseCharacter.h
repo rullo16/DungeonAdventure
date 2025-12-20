@@ -9,6 +9,7 @@
 class UBoxComponent;
 class UHealthComponent;
 class UPaperZDAnimSequence;
+class USoundCue;
 
 UCLASS()
 class DUNGEONADVENTURE_API ABaseCharacter : public APaperZDCharacter
@@ -39,6 +40,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UPaperZDAnimSequence* HitSequence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USoundCue* HitSound;
 
 	bool bIsInvincible;
 	bool bFlickerVisible;

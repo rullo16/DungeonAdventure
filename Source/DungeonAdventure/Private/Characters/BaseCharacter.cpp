@@ -8,6 +8,8 @@
 #include "PaperZDAnimInstance.h"
 #include "AsyncRootMovement.h"
 #include "PaperFlipbookComponent.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -74,6 +76,10 @@ void ABaseCharacter::DecreaseHealth(const float IncomingDamage)
 	if (HealthComponent && IsAlive())
 	{
 		HealthComponent->DecreaseHealth(IncomingDamage);
+		if (HitSound)
+		{
+			UGameplayStatics::PlaySound2D(this, HitSound);
+		}
 	}
 }
 

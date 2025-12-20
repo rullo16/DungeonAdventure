@@ -31,6 +31,11 @@ void UHealthComponent::DecreaseHealth(const float IncomingDamage)
 	CurrentHealth = FMath::Clamp(CurrentHealth - IncomingDamage, 0.f, MaxHealth);
 }
 
+void UHealthComponent::IncreaseHealth(const float HealthAmount)
+{
+	CurrentHealth = FMath::Clamp(CurrentHealth + HealthAmount, 0.f, MaxHealth);
+}
+
 bool UHealthComponent::IsAlive()
 {
 	return CurrentHealth>0.f;

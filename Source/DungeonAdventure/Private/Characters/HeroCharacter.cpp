@@ -15,6 +15,7 @@
 #include "Widgets/BaseHUD.h"
 #include "Widgets/HeartContainerComponent.h"
 #include "Projectiles/ProjectileBase.h"
+#include "Components/HealthComponent.h"
 
 AHeroCharacter::AHeroCharacter()
 {
@@ -49,6 +50,7 @@ void AHeroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SpringArm->SetWorldLocation(GetActorLocation());
 	AddDefaultInputMapping();
 	InitializeHUD();
 }
@@ -96,13 +98,14 @@ void AHeroCharacter::Attack(const FInputActionValue& Value)
 
 void AHeroCharacter::ShootBow(const FInputActionValue& Value)
 {
-	if (CanAct()) {
+	if (CanAct() && BowUses>0.f) {
 		Attacking = true;
 
 		FZDOnAnimationOverrideEndSignature OnOverrideEnd;
 		OnOverrideEnd.BindUObject(this, &AHeroCharacter::OnAttackAnimationEnd);
 
 		GetAnimInstance()->PlayAnimationOverride(BowSequence, "DefaultSlot", 1.0f, 0.f, OnOverrideEnd);
+		BowUses -= 1.f;
 	}
 }
 
@@ -141,6 +144,18 @@ void AHeroCharacter::FireArrow()
 		GetWorld()->SpawnActor<AProjectileBase>(ArrowClass, SpawnLocation, SpawnRotation, SpawnParams);
 	}
 	
+}
+
+void AHeroCharacter::IncreaseHealth(const float HealthAmount)
+{
+	if (HealthComponent)
+	{
+		HealthComponent->IncreaseHealth(HealthAmount);
+		if (HUDWidget && HUDWidget->HeartBox)
+		{
+			HUDWidget->HeartBox->UpdateCurrentHealth(GetCurrentHealth());
+		}
+	}
 }
 
 
